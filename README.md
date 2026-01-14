@@ -114,7 +114,8 @@ Every response from Skema follows a standardized production-grade structure:
 
 Once the server is running, visit:
 
-- **Interactive UI**: `http://localhost:8080/docs`
+- **Beautiful Docs (ReDoc)**: `http://localhost:8080/docs`
+- **Interactive Testing (Swagger UI)**: `http://localhost:8080/swagger`
 - **Raw Specification**: `http://localhost:8080/openapi.json`
 
 ## Example `skema.yml`

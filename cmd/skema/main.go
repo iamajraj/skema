@@ -54,7 +54,8 @@ entities:
 	// Register Docs
 	docs.RegisterSwagger(srv.Router, cfg)
 
-	fmt.Printf("📚 Docs available at http://localhost:%d/docs\n", cfg.Server.Port)
+	fmt.Printf("📚 ReDoc available at http://localhost:%d/docs\n", cfg.Server.Port)
+	fmt.Printf("🛠️  Swagger UI available at http://localhost:%d/swagger\n", cfg.Server.Port)
 
 	// Start server
 	if err := srv.Start(); err != nil {
