@@ -1,0 +1,36 @@
+server:
+  port: 8081
+  name: 'Task Manager API'
+
+entities:
+  - name: Category
+    fields:
+      - name: name
+        type: string
+        required: true
+        unique: true
+    relations:
+      - type: has_many
+        entity: Task
+        field: category_id
+
+  - name: Task
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: description
+        type: text
+      - name: priority
+        type: int
+        min: 1
+        max: 5
+      - name: completed
+        type: bool
+      - name: category_id
+        type: int
+        required: true
+    relations:
+      - type: belongs_to
+        entity: Category
+        field: category_id

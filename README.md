@@ -11,6 +11,7 @@
 - **Intelligent Relationships**: Support for `belongs_to` and `has_many` with on-demand data expansion (`?expand=posts`).
 - **Auto-Documentation**: Generates OpenAPI 3.0 specs and serves an interactive **ReDoc UI**.
 - **Automated Timestamps**: Every record automatically tracks `created_at` and `updated_at`.
+- **Examples**: Built-in [examples](./examples) for Blog, E-commerce, and Task management.
 
 ---
 

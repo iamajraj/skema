@@ -1,0 +1,66 @@
+server:
+  port: 8082
+  name: 'Premium Blog API'
+
+entities:
+  - name: User
+    fields:
+      - name: username
+        type: string
+        required: true
+        unique: true
+        pattern: '^[a-zA-Z0-9_]{3,20}$'
+      - name: email
+        type: string
+        unique: true
+        format: email
+      - name: bio
+        type: text
+    relations:
+      - type: has_many
+        entity: Post
+        field: author_id
+      - type: has_many
+        entity: Comment
+        field: user_id
+
+  - name: Post
+    fields:
+      - name: title
+        type: string
+        required: true
+      - name: content
+        type: text
+        required: true
+      - name: author_id
+        type: int
+        required: true
+      - name: status
+        type: string
+        required: true # e.g., 'draft', 'published'
+    relations:
+      - type: belongs_to
+        entity: User
+        field: author_id
+      - type: has_many
+        entity: Comment
+        field: post_id
+
+  - name: Comment
+    fields:
+      - name: content
+        type: text
+        required: true
+      - name: post_id
+        type: int
+        required: true
+      - name: user_id
+        type: int
+        required: true
+    relations:
+      - type: belongs_to
+        entity: Post
+        field: post_id
+      - type: belongs_to
+        entity: User
+        field: user_id

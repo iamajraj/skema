@@ -1,0 +1,80 @@
+server:
+  port: 8083
+  name: 'E-Commerce Store API'
+
+entities:
+  - name: Product
+    fields:
+      - name: sku
+        type: string
+        required: true
+        unique: true
+      - name: name
+        type: string
+        required: true
+      - name: description
+        type: text
+      - name: price
+        type: float
+        min: 0
+      - name: stock_quantity
+        type: int
+        min: 0
+      - name: category_id
+        type: int
+    relations:
+      - type: belongs_to
+        entity: Category
+        field: category_id
+      - type: has_many
+        entity: OrderItem
+        field: product_id
+
+  - name: Category
+    fields:
+      - name: name
+        type: string
+        required: true
+        unique: true
+    relations:
+      - type: has_many
+        entity: Product
+        field: category_id
+
+  - name: Order
+    fields:
+      - name: customer_name
+        type: string
+        required: true
+      - name: customer_email
+        type: string
+        format: email
+      - name: total_amount
+        type: float
+        min: 0
+    relations:
+      - type: has_many
+        entity: OrderItem
+        field: order_id
+
+  - name: OrderItem
+    fields:
+      - name: order_id
+        type: int
+        required: true
+      - name: product_id
+        type: int
+        required: true
+      - name: quantity
+        type: int
+        min: 1
+      - name: unit_price
+        type: float
+        min: 0
+    relations:
+      - type: belongs_to
+        entity: Order
+        field: order_id
+      - type: belongs_to
+        entity: Product
+        field: product_id
