@@ -77,10 +77,45 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 		}
 
 		// Paths
+		collectionParams := []interface{}{
+			map[string]interface{}{"name": "limit", "in": "query", "schema": map[string]interface{}{"type": "integer", "default": 100}, "description": "Limit the number of records"},
+			map[string]interface{}{"name": "offset", "in": "query", "schema": map[string]interface{}{"type": "integer", "default": 0}, "description": "Number of records to skip"},
+			map[string]interface{}{"name": "sort", "in": "query", "schema": map[string]interface{}{"type": "string"}, "description": "Sort order (e.g., name:asc, created_at:desc)"},
+		}
+
+		// Relationships for expansion
+		var expandable []string
+		for _, rel := range entity.Relations {
+			if rel.Type == "belongs_to" {
+				expandable = append(expandable, strings.ToLower(rel.Entity))
+			} else {
+				expandable = append(expandable, strings.ToLower(rel.Entity)+"s")
+			}
+		}
+		if len(expandable) > 0 {
+			collectionParams = append(collectionParams, map[string]interface{}{
+				"name":        "expand",
+				"in":          "query",
+				"schema":      map[string]interface{}{"type": "string"},
+				"description": "Expand related data: " + strings.Join(expandable, ", "),
+			})
+		}
+
+		// Dynamic filters
+		for _, field := range entity.Fields {
+			collectionParams = append(collectionParams, map[string]interface{}{
+				"name":        field.Name,
+				"in":          "query",
+				"schema":      map[string]interface{}{"type": mapType(field.Type)},
+				"description": "Filter by " + field.Name,
+			})
+		}
+
 		paths[collectionPath] = map[string]interface{}{
 			"get": map[string]interface{}{
-				"tags":    []string{name},
-				"summary": "List all " + lowerName + "s",
+				"tags":       []string{name},
+				"summary":    "List all " + lowerName + "s",
+				"parameters": collectionParams,
 				"responses": map[string]interface{}{
 					"200": map[string]interface{}{
 						"description": "A list of " + lowerName + "s",
@@ -123,6 +158,12 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 					"in":       "path",
 					"required": true,
 					"schema":   map[string]interface{}{"type": "integer"},
+				},
+				map[string]interface{}{
+					"name":        "expand",
+					"in":          "query",
+					"schema":      map[string]interface{}{"type": "string"},
+					"description": "Expand related data: " + strings.Join(expandable, ", "),
 				},
 			},
 			"get": map[string]interface{}{

@@ -8,11 +8,22 @@ entities:
       - name: name
         type: string
         required: true
+        pattern: '^[a-zA-Z ]+$'
       - name: email
         type: string
         unique: true
+        format: email
       - name: age
         type: int
+        min: 18
+        max: 120
+    relations:
+      - type: has_many
+        entity: Post
+        field: user_id
+      - type: has_many
+        entity: Comment
+        field: user_id
 
   - name: Post
     fields:
@@ -23,6 +34,14 @@ entities:
         type: text
       - name: published
         type: bool
+      - name: user_id
+        type: int
+        required: true
+    relations:
+      - type: belongs_to
+        entity: User
+        field: user_id
+
   - name: Comment
     fields:
       - name: content
@@ -33,3 +52,10 @@ entities:
       - name: user_id
         type: int
         required: true
+    relations:
+      - type: belongs_to
+        entity: Post
+        field: post_id
+      - type: belongs_to
+        entity: User
+        field: user_id

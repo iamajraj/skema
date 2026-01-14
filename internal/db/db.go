@@ -65,6 +65,14 @@ func createTable(db *gorm.DB, entity config.EntityConfig) error {
 
 	columns = append(columns, "created_at DATETIME", "updated_at DATETIME")
 
+	// Add Foreign Keys
+	for _, rel := range entity.Relations {
+		if rel.Type == "belongs_to" {
+			targetTable := strings.ToLower(rel.Entity) + "s"
+			columns = append(columns, fmt.Sprintf("FOREIGN KEY (%s) REFERENCES %s(id)", rel.Field, targetTable))
+		}
+	}
+
 	query := fmt.Sprintf("CREATE TABLE %s (%s)", tableName, strings.Join(columns, ", "))
 	return db.Exec(query).Error
 }

@@ -1,23 +1,100 @@
 # Skema
 
-Skema is a Go-powered tool that allows you to instantly spin up a fully functional CRUD API server just by defining your schema in a YAML file.
+**Skema** is a powerful Go-powered tool that allows you to instantly spin up a fully functional, production-ready CRUD API server defined by a single YAML file. It handles database migrations, relationships, advanced querying, and serves a beautiful ReDoc documentation UI.
 
-## Features
+## ✨ Features
 
-- **Instant CRUD**: Automatically generates GET, POST, PUT, and DELETE endpoints for your entities.
-- **Dynamic Database**: Automatically creates and manages SQLite tables based on your schema.
-- **Auto Documentation**: Generates OpenAPI 3.0 specs and serves them via an interactive ReDoc UI.
-- **Automatic Timestamps**: Handles `created_at` and `updated_at` for every record.
-- **Zero Configuration**: Just one YAML file is all you need.
+- **Instant CRUD**: Automatically generates `GET`, `POST`, `GET /id`, `PUT`, and `DELETE` endpoints.
+- **Dynamic Database**: Automatically creates SQLite tables and handles Foreign Key constraints.
+- **🛡️ Smart Validation**: Enforce data integrity with `min`, `max`, `pattern` (regex), and `format` constraints.
+- **🚀 Advanced Querying**: Built-in support for filtering, sorting (`?sort=age:desc`), and pagination (`?limit=10&offset=0`).
+- **🔗 Intelligent Relationships**: Support for `belongs_to` and `has_many` with on-demand data expansion (`?expand=posts`).
+- **📚 Auto-Documentation**: Generates OpenAPI 3.0 specs and serves an interactive **ReDoc UI**.
+- **⏱️ Automated Timestamps**: Every record automatically tracks `created_at` and `updated_at`.
 
-## Quick Start
+---
 
-### 1. Define your schema (`skema.yml`)
+## 🛠️ Configuration Guide (`skema.yml`)
+
+The entire server behavior is controlled by one file.
+
+### 1. Server Settings
 
 ```yaml
 server:
   port: 8080
   name: 'My Awesome API'
+```
+
+### 2. Entities & Fields
+
+Define your database tables as entities.
+
+#### Field Types:
+
+- `string`: Standard text.
+- `int`: Whole numbers.
+- `bool`: True/False values.
+- `text`: Long content/descriptions.
+- `float`: Decimal numbers.
+
+#### Field Constraints (Validators):
+
+- `required: true`: Field must be present and non-empty.
+- `unique: true`: Field value must be unique in the table.
+- `min: <int>`: Minimum value for `int` or `float` fields.
+- `max: <int>`: Maximum value for `int` or `float` fields.
+- `pattern: "<regex>"`: Value must match the provided regular expression.
+- `format: "email"`: Validates that the string is a properly formatted email.
+
+### 3. Relationships
+
+Skema handles linkages between your data.
+
+- **`belongs_to`**: Adds a foreign key to the table and enables object expansion.
+- **`has_many`**: Enables fetching a collection of related items.
+
+```yaml
+relations:
+  - type: belongs_to
+    entity: User
+    field: user_id
+```
+
+---
+
+## 📖 API Usage
+
+### Getting Started
+
+```bash
+go run cmd/skema/main.go --config skema.yml
+```
+
+### Advanced Querying
+
+- **Filtering**: `/users?name=Alice` (String fields use partial matching).
+- **Sorting**: `/users?sort=age:desc` or `/users?sort=created_at:asc`.
+- **Pagination**: `/users?limit=10&offset=20`.
+- **Expansion**: Nested related data using `?expand`.
+  - `GET /posts?expand=user` (Singular expansion for `belongs_to`).
+  - `GET /users/1?expand=posts` (Plural expansion for `has_many`).
+
+---
+
+## 📚 Documentation
+
+Once the server is running, visit:
+
+- **Interactive UI**: `http://localhost:8080/docs`
+- **Raw Specification**: `http://localhost:8080/openapi.json`
+
+## 🏗️ Example `skema.yml`
+
+```yaml
+server:
+  port: 8080
+  name: 'Blog Engine'
 
 entities:
   - name: User
@@ -25,52 +102,35 @@ entities:
       - name: name
         type: string
         required: true
+        pattern: '^[a-zA-Z ]+$'
       - name: email
         type: string
         unique: true
+        format: email
       - name: age
         type: int
+        min: 18
+    relations:
+      - type: has_many
+        entity: Post
+        field: user_id
 
   - name: Post
     fields:
       - name: title
         type: string
         required: true
-      - name: content
-        type: text
-      - name: published
-        type: bool
+      - name: user_id
+        type: int
+        required: true
+    relations:
+      - type: belongs_to
+        entity: User
+        field: user_id
 ```
 
-### 2. Run the server
-
-```bash
-go run cmd/skema/main.go --config skema.yml
-```
-
-### 3. Explore APIs & Docs
-
-- **API Base**: `http://localhost:8080`
-- **Interactive Docs**: `http://localhost:8080/docs`
-- **OpenAPI Spec**: `http://localhost:8080/openapi.json`
-
-## Supported Types
-
-- `string`
-- `int`
-- `bool`
-- `text`
-- `float`
-
-## API Endpoints
-
-For each entity (e.g., `User` -> `/users`):
-
-- `GET /users` - List all records
-- `POST /users` - Create a new record
-- `GET /users/:id` - Get a specific record
-- `PUT /users/:id` - Update a record
-- `DELETE /users/:id` - Delete a record
+---
 
 ## Author
+
 [Muhammad Raj](https://github.com/iamajraj)
