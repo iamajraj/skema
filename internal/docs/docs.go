@@ -122,9 +122,23 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 						"content": map[string]interface{}{
 							"application/json": map[string]interface{}{
 								"schema": map[string]interface{}{
-									"type": "array",
-									"items": map[string]interface{}{
-										"$ref": "#/components/schemas/" + name,
+									"type": "object",
+									"properties": map[string]interface{}{
+										"success": map[string]interface{}{"type": "boolean"},
+										"data": map[string]interface{}{
+											"type": "array",
+											"items": map[string]interface{}{
+												"$ref": "#/components/schemas/" + name,
+											},
+										},
+										"meta": map[string]interface{}{
+											"type": "object",
+											"properties": map[string]interface{}{
+												"total":  map[string]interface{}{"type": "integer"},
+												"limit":  map[string]interface{}{"type": "integer"},
+												"offset": map[string]interface{}{"type": "integer"},
+											},
+										},
 									},
 								},
 							},
@@ -146,6 +160,17 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 				"responses": map[string]interface{}{
 					"201": map[string]interface{}{
 						"description": "Created",
+						"content": map[string]interface{}{
+							"application/json": map[string]interface{}{
+								"schema": map[string]interface{}{
+									"type": "object",
+									"properties": map[string]interface{}{
+										"success": map[string]interface{}{"type": "boolean"},
+										"data":    map[string]interface{}{"$ref": "#/components/schemas/" + name},
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -173,7 +198,13 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 					"200": map[string]interface{}{
 						"content": map[string]interface{}{
 							"application/json": map[string]interface{}{
-								"schema": map[string]interface{}{"$ref": "#/components/schemas/" + name},
+								"schema": map[string]interface{}{
+									"type": "object",
+									"properties": map[string]interface{}{
+										"success": map[string]interface{}{"type": "boolean"},
+										"data":    map[string]interface{}{"$ref": "#/components/schemas/" + name},
+									},
+								},
 							},
 						},
 					},
@@ -191,7 +222,20 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 					},
 				},
 				"responses": map[string]interface{}{
-					"200": map[string]interface{}{"description": "Updated"},
+					"200": map[string]interface{}{
+						"description": "Updated",
+						"content": map[string]interface{}{
+							"application/json": map[string]interface{}{
+								"schema": map[string]interface{}{
+									"type": "object",
+									"properties": map[string]interface{}{
+										"success": map[string]interface{}{"type": "boolean"},
+										"data":    map[string]interface{}{"$ref": "#/components/schemas/" + name},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			"delete": map[string]interface{}{

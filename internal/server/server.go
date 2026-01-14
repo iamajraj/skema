@@ -83,7 +83,7 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 				query = query.Order("created_at desc")
 			}
 
-			// 3. Pagination
+			// 3. Pagination & Count
 			limitStr := r.URL.Query().Get("limit")
 			offsetStr := r.URL.Query().Get("offset")
 
@@ -96,6 +96,9 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 				fmt.Sscanf(offsetStr, "%d", &offset)
 			}
 
+			var total int64
+			query.Count(&total)
+
 			results := []map[string]interface{}{}
 			if err := query.Limit(limit).Offset(offset).Find(&results).Error; err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -105,7 +108,15 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 			s.expandData(entity, results, r.URL.Query().Get("expand"))
 
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(results)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": true,
+				"data":    results,
+				"meta": map[string]interface{}{
+					"total":  total,
+					"limit":  limit,
+					"offset": offset,
+				},
+			})
 		})
 
 		// Create
@@ -132,7 +143,10 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(data)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": true,
+				"data":    data,
+			})
 		})
 
 		// Get by ID
@@ -149,7 +163,10 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 			s.expandData(entity, results, r.URL.Query().Get("expand"))
 
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(results[0])
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": true,
+				"data":    results[0],
+			})
 		})
 
 		// Update by ID
@@ -176,7 +193,10 @@ func (s *Server) setupEntityRoutes(entity config.EntityConfig) {
 			result := make(map[string]interface{})
 			s.DB.Table(tableName).Where("id = ?", id).Scan(&result)
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(result)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": true,
+				"data":    result,
+			})
 		})
 
 		// Delete by ID

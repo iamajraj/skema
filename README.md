@@ -6,11 +6,11 @@
 
 - **Instant CRUD**: Automatically generates `GET`, `POST`, `GET /id`, `PUT`, and `DELETE` endpoints.
 - **Dynamic Database**: Automatically creates SQLite tables and handles Foreign Key constraints.
-- **🛡️ Smart Validation**: Enforce data integrity with `min`, `max`, `pattern` (regex), and `format` constraints.
-- **🚀 Advanced Querying**: Built-in support for filtering, sorting (`?sort=age:desc`), and pagination (`?limit=10&offset=0`).
-- **🔗 Intelligent Relationships**: Support for `belongs_to` and `has_many` with on-demand data expansion (`?expand=posts`).
-- **📚 Auto-Documentation**: Generates OpenAPI 3.0 specs and serves an interactive **ReDoc UI**.
-- **⏱️ Automated Timestamps**: Every record automatically tracks `created_at` and `updated_at`.
+- **Smart Validation**: Enforce data integrity with `min`, `max`, `pattern` (regex), and `format` constraints.
+- **Advanced Querying**: Built-in support for filtering, sorting (`?sort=age:desc`), and pagination (`?limit=10&offset=0`).
+- **Intelligent Relationships**: Support for `belongs_to` and `has_many` with on-demand data expansion (`?expand=posts`).
+- **Auto-Documentation**: Generates OpenAPI 3.0 specs and serves an interactive **ReDoc UI**.
+- **Automated Timestamps**: Every record automatically tracks `created_at` and `updated_at`.
 
 ---
 
@@ -69,6 +69,33 @@ relations:
 
 ```bash
 go run cmd/skema/main.go --config skema.yml
+```
+
+### Standard Response Format
+
+Every response from Skema follows a standardized production-grade structure:
+
+#### For Collections (GET /entities):
+
+```json
+{
+  "success": true,
+  "data": [...],
+  "meta": {
+    "total": 100,
+    "limit": 10,
+    "offset": 0
+  }
+}
+```
+
+#### For Single Resources (POST, GET /entities/:id, PUT):
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
 ```
 
 ### Advanced Querying
