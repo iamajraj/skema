@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/iamajraj/skema/internal/config"
 	"github.com/go-chi/chi/v5"
+	"github.com/iamajraj/skema/internal/config"
 )
 
 func RegisterSwagger(r *chi.Mux, cfg *config.Config) {
@@ -48,12 +48,18 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 	paths := make(map[string]interface{})
 	components := make(map[string]interface{})
 	schemas := make(map[string]interface{})
+	var tags []map[string]interface{}
 
 	for _, entity := range cfg.Entities {
 		name := entity.Name
 		lowerName := strings.ToLower(name)
 		collectionPath := "/" + lowerName + "s"
 		itemPath := collectionPath + "/{id}"
+
+		tags = append(tags, map[string]interface{}{
+			"name":        name,
+			"description": "Operations for " + name,
+		})
 
 		// Schema definition
 		schemaProperties := make(map[string]interface{})
@@ -73,6 +79,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 		// Paths
 		paths[collectionPath] = map[string]interface{}{
 			"get": map[string]interface{}{
+				"tags":    []string{name},
 				"summary": "List all " + lowerName + "s",
 				"responses": map[string]interface{}{
 					"200": map[string]interface{}{
@@ -91,6 +98,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 				},
 			},
 			"post": map[string]interface{}{
+				"tags":    []string{name},
 				"summary": "Create a new " + lowerName,
 				"requestBody": map[string]interface{}{
 					"required": true,
@@ -118,6 +126,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 				},
 			},
 			"get": map[string]interface{}{
+				"tags":    []string{name},
 				"summary": "Get " + lowerName + " by ID",
 				"responses": map[string]interface{}{
 					"200": map[string]interface{}{
@@ -130,6 +139,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 				},
 			},
 			"put": map[string]interface{}{
+				"tags":    []string{name},
 				"summary": "Update " + lowerName + " by ID",
 				"requestBody": map[string]interface{}{
 					"required": true,
@@ -144,6 +154,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 				},
 			},
 			"delete": map[string]interface{}{
+				"tags":    []string{name},
 				"summary": "Delete " + lowerName + " by ID",
 				"responses": map[string]interface{}{
 					"204": map[string]interface{}{"description": "Deleted"},
@@ -160,6 +171,7 @@ func generateOpenAPI(cfg *config.Config) map[string]interface{} {
 			"title":   cfg.Server.Name,
 			"version": "1.0.0",
 		},
+		"tags":       tags,
 		"paths":      paths,
 		"components": components,
 	}
