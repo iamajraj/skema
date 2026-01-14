@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDB(cfg *config.Config) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("skema.db"), &gorm.Config{})
+func InitDB(cfg *config.Config, path string) (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

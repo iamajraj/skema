@@ -2,7 +2,7 @@
 
 **Skema** is a powerful Go-powered tool that allows you to instantly spin up a fully functional, production-ready CRUD API server defined by a single YAML file. It handles database migrations, relationships, advanced querying, and serves a beautiful ReDoc documentation UI.
 
-## ✨ Features
+## Features
 
 - **Instant CRUD**: Automatically generates `GET`, `POST`, `GET /id`, `PUT`, and `DELETE` endpoints.
 - **Dynamic Database**: Automatically creates SQLite tables and handles Foreign Key constraints.
@@ -14,7 +14,7 @@
 
 ---
 
-## 🛠️ Configuration Guide (`skema.yml`)
+## Configuration Guide (`skema.yml`)
 
 The entire server behavior is controlled by one file.
 
@@ -63,7 +63,7 @@ relations:
 
 ---
 
-## 📖 API Usage
+## API Usage
 
 ### Getting Started
 
@@ -109,14 +109,14 @@ Every response from Skema follows a standardized production-grade structure:
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 Once the server is running, visit:
 
 - **Interactive UI**: `http://localhost:8080/docs`
 - **Raw Specification**: `http://localhost:8080/openapi.json`
 
-## 🏗️ Example `skema.yml`
+## Example `skema.yml`
 
 ```yaml
 server:
@@ -157,6 +157,16 @@ entities:
 ```
 
 ---
+
+## Testing
+
+Skema includes a comprehensive test suite for configuration, database, and API logic.
+
+To run all tests:
+
+```bash
+go test ./...
+```
 
 ## Author
 

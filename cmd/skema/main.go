@@ -43,7 +43,7 @@ entities:
 	fmt.Printf("🚀 Starting %s...\n", cfg.Server.Name)
 
 	// Initialize DB
-	database, err := db.InitDB(cfg)
+	database, err := db.InitDB(cfg, "skema.db")
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
